@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MissedPrayDto } from 'src/DTO/missed-pray.dto';
 import { MissedPrayList } from 'src/entities/missed-pray-list';
@@ -20,5 +20,16 @@ export class MissedPraysService {
       missedAt,
     });
     return await this.missedPrayListRepository.save(missedPray);
+  }
+
+  async getMissedPray(userId: number) {
+    const missedPray = await this.missedPrayListRepository.find({
+      where: { userId },
+    });
+    if (!missedPray) {
+      throw new NotFoundException('Missed pray not found');
+    }
+
+    return missedPray;
   }
 }
